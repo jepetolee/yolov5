@@ -160,7 +160,7 @@ def train(hyp, tb_writer, opt, device):
 
     # Scheduler https://arxiv.org/pdf/1812.01187.pdf
     lf = lambda x: (((1 + math.cos(x * math.pi / epochs)) / 2) ** 1.0) * 0.8 + 0.2  # cosine
-    scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
+    #scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
     # https://discuss.pytorch.org/t/a-problem-occured-when-resuming-an-optimizer/28822
     # plot_lr_scheduler(optimizer, scheduler, epochs)
 
@@ -222,7 +222,7 @@ def train(hyp, tb_writer, opt, device):
     nw = max(3 * nb, 1e3)  # number of warmup iterations, max(3 epochs, 1k iterations)
     maps = np.zeros(nc)  # mAP per class
     results = (0, 0, 0, 0, 0, 0, 0)  # 'P', 'R', 'mAP', 'F1', 'val GIoU', 'val Objectness', 'val Classification'
-    scheduler.last_epoch = start_epoch - 1  # do not move
+    #scheduler.last_epoch = start_epoch - 1  # do not move
     if rank in [0, -1]:
         print('Image sizes %g train, %g test' % (imgsz, imgsz_test))
         print('Using %g dataloader workers' % dataloader.num_workers)
@@ -328,7 +328,7 @@ def train(hyp, tb_writer, opt, device):
             # end batch ------------------------------------------------------------------------------------------------
 
         # Scheduler
-        scheduler.step()
+       # scheduler.step()
 
         # Only the first process in DDP mode is allowed to log or save checkpoints.
         if rank in [-1, 0]:
@@ -410,7 +410,7 @@ if __name__ == '__main__':
     parser.add_argument('--hyp', type=str, default='', help='hyp.yaml path (optional)')
     parser.add_argument('--epochs', type=int, default=300)
     parser.add_argument('--batch-size', type=int, default=16, help="Total batch size for all gpus.")
-    parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='train,test sizes')
+    parser.add_argument('--img-size', nargs='+', type=int, default=[192, 224], help='train,test sizes')
     parser.add_argument('--rect', action='store_true', help='rectangular training')
     parser.add_argument('--resume', nargs='?', const='get_last', default=False,
                         help='resume from given path/to/last.pt, or most recent run if blank.')
@@ -422,7 +422,7 @@ if __name__ == '__main__':
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
     parser.add_argument('--weights', type=str, default='', help='initial weights path')
     parser.add_argument('--name', default='', help='renames results.txt to results_name.txt if supplied')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--multi-scale', action='store_true', help='vary img-size +/- 50%%')
     parser.add_argument('--single-cls', action='store_true', help='train as single-class dataset')
     parser.add_argument('--sync-bn', action='store_true', help='use SyncBatchNorm, only available in DDP mode')
